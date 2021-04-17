@@ -37,10 +37,10 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
   int selectedHour;
   int selectedMinute;
 
-  List<int> hourList = List.generate(12, (index) => index + 1);
+  List<int> hourList;
   List<int> minuteList = List.generate(60, (index) => index);
-  ScrollController hourController;
-  ScrollController minuteController;
+  FixedExtentScrollController hourController;
+  FixedExtentScrollController minuteController;
   double timeSelectorHeight = 40;
   Orientation orientation;
 
@@ -58,24 +58,23 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
   }
 
   void reset() {
-    print("RESETTING");
     selectedDateIndex = null;
     selectedMinute = widget.startDate.minute;
     if (widget.startDate.hour <= 12) {
       selectedHour = widget.startDate.hour;
+      hourList = List.generate(12, (index) => index + 1);
     } else {
       selectedHour = (widget.startDate.hour ~/ 12);
+      hourList = List.generate(11, (index) => index + 1);
       isAm = false;
     }
 
     if (hourController == null && minuteController == null) {
-      hourController = ScrollController(initialScrollOffset: (timeSelectorHeight * selectedHour).toDouble());
-      minuteController = ScrollController(initialScrollOffset: (timeSelectorHeight * selectedMinute).toDouble());
+      hourController = FixedExtentScrollController(initialItem: selectedHour);
+      minuteController = FixedExtentScrollController(initialItem: selectedMinute);
     } else {
-      hourController.animateTo((timeSelectorHeight * selectedHour).toDouble(),
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-      minuteController.animateTo((timeSelectorHeight * selectedMinute).toDouble(),
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+      hourController.animateToItem(selectedHour, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+      minuteController.animateToItem(selectedMinute, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
       setState(() {});
     }
   }
@@ -83,18 +82,33 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
   void select() {
     DateTime selectedDate;
     DateTime today = DateTime.now();
-    int hour = hourList[selectedHour];
+    int hour = hourList[hourController.selectedItem];
+
+    // If selected PM
+    if (!isAm) {
+      hour += 12;
+    }
+
     if (selectedDateIndex == null) {
-      selectedDate = DateTime(today.year, today.month, today.day, hourList[selectedHour], minuteList[selectedMinute]);
+      selectedDate = DateTime(today.year, today.month, today.day, hour, minuteList[minuteController.selectedItem]);
     } else {
       selectedDate = DateTime(days[selectedDateIndex].year, days[selectedDateIndex].month, days[selectedDateIndex].day,
-          hourList[selectedHour], minuteList[selectedMinute]);
+          hour, minuteList[minuteController.selectedItem]);
     }
-    print("MINUTE - ${minuteController.offset / timeSelectorHeight}");
-    print("HOUR - ${hourController.offset / timeSelectorHeight}");
-    print("SELECTED - $selectedDate");
-    // widget.onSelect(selectedDate);
-    // Navigator.pop(context);
+
+    widget.onSelect(selectedDate);
+    Navigator.pop(context);
+  }
+
+  void _changeHalfOfDay(bool value) {
+    setState(() {
+      isAm = value;
+      if (isAm) {
+        hourList = List.generate(12, (index) => index + 1);
+      } else {
+        hourList = List.generate(11, (index) => index + 1);
+      }
+    });
   }
 
   @override
@@ -270,9 +284,7 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        setState(() {
-                          isAm = !isAm;
-                        });
+                        _changeHalfOfDay(true);
                       },
                       child: Container(
                         color: isAm ? Colors.blueAccent : Colors.white,
@@ -290,9 +302,7 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        setState(() {
-                          isAm = !isAm;
-                        });
+                        _changeHalfOfDay(false);
                       },
                       child: Container(
                         color: !isAm ? Colors.blueAccent : Colors.white,
@@ -317,15 +327,13 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
                 children: [
                   Expanded(
                     child: ListWheelScrollView(
+                        key: UniqueKey(),
                         itemExtent: timeSelectorHeight,
                         useMagnifier: true,
                         magnification: 1.5,
                         diameterRatio: 1.6,
-                        // controller: hourController,
-                        onSelectedItemChanged: (index) {
-                          print("HOUR CHANGE - $index");
-                          selectedHour = hourList[index];
-                        },
+                        controller: hourController,
+                        overAndUnderCenterOpacity: 0.3,
                         children: <Widget>[
                           ...hourList.map((int hour) {
                             return Container(
@@ -344,12 +352,8 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
                         useMagnifier: true,
                         magnification: 1.5,
                         diameterRatio: 1.6,
-
-                        // controller: minuteController,
-                        onSelectedItemChanged: (index) {
-                          print("MINUTE CHANGE - $index");
-                          selectedMinute = minuteList[index];
-                        },
+                        controller: minuteController,
+                        overAndUnderCenterOpacity: 0.3,
                         children: <Widget>[
                           ...minuteList.map((int minute) {
                             return Container(
