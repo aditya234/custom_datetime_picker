@@ -44,11 +44,6 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     orientation = MediaQuery.of(context).orientation;
   }
 
-  getCalenderDateTimes() {
-    months = calender[years[selectedYearIndex]].keys.toList();
-    days = calender[years[selectedYearIndex]][months[selectedMonthIndex]];
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -66,7 +61,6 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                       //open year selector
                       setState(() {
                         selectorIndex = 2;
-                        getCalenderDateTimes();
                       });
                     },
                     child: Container(
@@ -96,7 +90,6 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                       // open month selector
                       setState(() {
                         selectorIndex = 1;
-                        getCalenderDateTimes();
                       });
                     },
                     child: Container(
@@ -154,29 +147,19 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       child: GridView.builder(
         itemCount: dataList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (orientation == Orientation.portrait) ? 4 : 5),
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (orientation == Orientation.portrait) ? 5 : 6),
         itemBuilder: (context, index) {
           return InkWell(
             onTap: () {
-              switch (selectorIndex) {
-                case 0:
-                  selectedDayIndex = index;
-                  break;
-                case 1:
-                  selectedMonthIndex = index;
-                  selectorIndex = 0;
-                  break;
-                case 2:
-                  selectedYearIndex = index;
-                  selectorIndex = 1;
-                  break;
-              }
-              setState(() {});
+              _onPickerTap(index);
             },
             child: Card(
               color: selectedItemIndex == index
                   ? Colors.blueAccent
-                  : (selectorIndex == 0 && today.day == index + 1)
+                  : (selectorIndex == 0 &&
+                          today.day == index + 1 &&
+                          (selectedMonthIndex + 1 == today.month) &&
+                          (years[selectedYearIndex] == today.year))
                       ? Colors.grey[300]
                       : Colors.white,
               child: Container(
@@ -198,5 +181,32 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         },
       ),
     );
+  }
+
+  void _onPickerTap(int index) {
+    switch (selectorIndex) {
+      case 0:
+        selectedDayIndex = index;
+        break;
+      case 1:
+        selectedMonthIndex = index;
+        selectorIndex = 0;
+        getCalenderDateTimes();
+        selectedDayIndex = 0;
+        break;
+      case 2:
+        selectedYearIndex = index;
+        selectorIndex = 1;
+        getCalenderDateTimes();
+        selectedMonthIndex = 0;
+        selectedDayIndex = 0;
+        break;
+    }
+    setState(() {});
+  }
+
+  getCalenderDateTimes() {
+    months = calender[years[selectedYearIndex]].keys.toList();
+    days = calender[years[selectedYearIndex]][months[selectedMonthIndex]];
   }
 }

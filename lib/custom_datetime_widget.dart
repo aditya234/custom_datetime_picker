@@ -22,7 +22,7 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
   @override
   void initState() {
     super.initState();
-    selectedDate = widget.startDate;
+    selectedDate = DateTime(widget.startDate.year, widget.startDate.month, widget.startDate.day);
     selectedTime = TimeOfDay.fromDateTime(widget.startDate);
   }
 
@@ -92,8 +92,8 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
       flex: 2,
       fit: FlexFit.tight,
       child: CustomDatePicker(
-        endDate: widget.endDate,
-        startDate: widget.startDate,
+        endDate: DateTime(widget.endDate.year, widget.endDate.month, widget.endDate.day),
+        startDate: selectedDate,
         onSelect: (DateTime newDate) {
           selectedDate = newDate;
         },
