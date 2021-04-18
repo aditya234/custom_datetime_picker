@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   DateTime _chosenDateTime;
-  String start = '2021-04-10 14:40:00.000';
+  String start = '2021-01-10 14:40:00.000';
   String end = '2021-04-30 00:00:00.000';
 
   @override

@@ -9,23 +9,31 @@ extension DateTimeHelpers on DateTime {
     return false;
   }
 
-  Map<int, Map<String, List<int>>> getDaysInBetween(DateTime endDate) {
+  Map<int, Map<String, List<int>>> generateCalender(DateTime endDate) {
     Constants constants = Constants();
     Map<int, Map<String, List<int>>> calender = {};
-    calender[this.year] = {
-      constants.monthMapping[this.month]: [this.day],
-    };
     for (int i = 0; i <= endDate.difference(this).inDays; i++) {
-      // days.add(this.add(Duration(days: i)));
       DateTime date = this.add(Duration(days: i));
+      //if contains this year
       if (calender.containsKey(date.year)) {
-        if (calender[date.year].containsKey(constants.monthMapping[this.month])) {
-          calender[date.year][constants.monthMapping[date.month]].add(date.day);
-        } else {
+        if ((calender[date.year] ?? const {})[constants.monthMapping[date.month]] == null) {
+          //for flutter version with null safety
+          ////////////// calender[date.year]![constants.monthMapping[date.month]!] = [date.day];
+          //for flutter version with no null safety
           calender[date.year][constants.monthMapping[date.month]] = [date.day];
+        } else {
+          //for flutter version with null safety
+          ////////////// calender[date.year]![constants.monthMapping[date.month]!]!.add(date.day);
+          //for flutter version with no null safety
+          calender[date.year][constants.monthMapping[date.month]].add(date.day);
         }
-      } else {
+      }
+      //if doesnot contain the year
+      else {
         calender[date.year] = {
+          //for flutter version with null safety
+          ////////////// constants.monthMapping[date.month]!: [date.day],
+          //for flutter version with no null safety
           constants.monthMapping[date.month]: [date.day],
         };
       }

@@ -72,7 +72,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       decoration: BoxDecoration(
         border: Border(
           left: BorderSide(
-            color: Color(0xffb5b3b3),
+            color: constants.borderColor,
           ),
         ),
       ),
@@ -84,7 +84,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Color(0xffb5b3b3),
+                  color: constants.borderColor,
                 ),
               ),
             ),
