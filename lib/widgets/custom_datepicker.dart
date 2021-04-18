@@ -202,6 +202,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         selectedDayIndex = 0;
         break;
     }
+    widget.onSelect(DateTime(years[selectedYearIndex], selectedMonthIndex + 1, days[selectedDayIndex]));
     setState(() {});
   }
 
