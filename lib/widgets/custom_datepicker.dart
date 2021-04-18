@@ -29,7 +29,6 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   /// 1=> month selector
   /// 2=> year selector
   int selectorIndex = 0;
-  int selectedItemIndex = 0;
 
   @override
   void initState() {
@@ -45,28 +44,9 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     orientation = MediaQuery.of(context).orientation;
   }
 
-  getCalenderDateTimes({int yearIndex, int monthIndex}) {
-    // Since initially first year is selected, we get the months in first year, and days in that month
-    if (yearIndex == null && monthIndex == null) {
-      months = calender[years.first].keys.toList();
-      days = calender[years.first][months.first];
-    } else {
-      selectedYearIndex = yearIndex ?? selectedYearIndex;
-      months = calender[years[selectedYearIndex]].keys.toList();
-
-      // checking if the selected month index is present
-      if (months.length > monthIndex) {
-        selectedMonthIndex = monthIndex;
-      } else {
-        selectedMonthIndex = 0;
-      }
-      days = calender[years[selectedYearIndex]][months[selectedMonthIndex]];
-      //checking if selected day is present in the days list
-      if (days.length <= selectedDayIndex) {
-        selectedDayIndex = 0;
-      }
-      setState(() {});
-    }
+  getCalenderDateTimes() {
+    months = calender[years[selectedYearIndex]].keys.toList();
+    days = calender[years[selectedYearIndex]][months[selectedMonthIndex]];
   }
 
   @override
@@ -86,6 +66,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                       //open year selector
                       setState(() {
                         selectorIndex = 2;
+                        getCalenderDateTimes();
                       });
                     },
                     child: Container(
@@ -101,7 +82,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                           style: DefaultTextStyle.of(context).style,
                           children: <TextSpan>[
                             TextSpan(
-                                text: years[selectedYearIndex].toString(), style: TextStyle(fontWeight: FontWeight.bold)),
+                                text: years[selectedYearIndex].toString(),
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -114,6 +96,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                       // open month selector
                       setState(() {
                         selectorIndex = 1;
+                        getCalenderDateTimes();
                       });
                     },
                     child: Container(
@@ -148,17 +131,24 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
 
   _createPicker(BuildContext context) {
     DateTime today = DateTime.now();
-    bool isToday = false;
-    if (years[selectedYearIndex] == today.year &&
-        (selectedMonthIndex + 1) == today.month &&
-        (selectedDayIndex + 1) == today.day) {
-      isToday = true;
+
+    List dataList = [];
+
+    int selectedItemIndex = 0;
+    switch (selectorIndex) {
+      case 0:
+        selectedItemIndex = selectedDayIndex;
+        dataList = days;
+        break;
+      case 1:
+        selectedItemIndex = selectedMonthIndex;
+        dataList = months;
+        break;
+      case 2:
+        selectedItemIndex = selectedYearIndex;
+        dataList = years;
+        break;
     }
-    List dataList = (selectorIndex == 0
-        ? days
-        : selectorIndex == 1
-            ? months
-            : years);
     return SizedBox(
       height: 280,
       child: GridView.builder(
@@ -168,15 +158,25 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         itemBuilder: (context, index) {
           return InkWell(
             onTap: () {
-              // setState(() {
-              //   selectedDateIndex = index;
-              //   widget.onSelect(days[selectedDateIndex]);
-              // });
+              switch (selectorIndex) {
+                case 0:
+                  selectedDayIndex = index;
+                  break;
+                case 1:
+                  selectedMonthIndex = index;
+                  selectorIndex = 0;
+                  break;
+                case 2:
+                  selectedYearIndex = index;
+                  selectorIndex = 1;
+                  break;
+              }
+              setState(() {});
             },
             child: Card(
               color: selectedItemIndex == index
                   ? Colors.blueAccent
-                  : isToday
+                  : (selectorIndex == 0 && today.day == index + 1)
                       ? Colors.grey[300]
                       : Colors.white,
               child: Container(
@@ -191,8 +191,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                         fontSize: 12),
                   ),
                 ),
-                ),
               ),
+            ),
             // ),
           );
         },
