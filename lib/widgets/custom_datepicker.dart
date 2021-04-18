@@ -147,7 +147,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       child: GridView.builder(
         itemCount: dataList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (orientation == Orientation.portrait) ? 5 : 6),
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (orientation == Orientation.portrait) ? 4 : 5),
         itemBuilder: (context, index) {
           return InkWell(
             onTap: () {
@@ -191,15 +191,15 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       case 1:
         selectedMonthIndex = index;
         selectorIndex = 0;
-        getCalenderDateTimes();
         selectedDayIndex = 0;
+        getCalenderDateTimes();
         break;
       case 2:
         selectedYearIndex = index;
         selectorIndex = 1;
-        getCalenderDateTimes();
         selectedMonthIndex = 0;
         selectedDayIndex = 0;
+        getCalenderDateTimes();
         break;
     }
     widget.onSelect(DateTime(years[selectedYearIndex], selectedMonthIndex + 1, days[selectedDayIndex]));
