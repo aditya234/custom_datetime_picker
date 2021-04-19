@@ -7,8 +7,9 @@ class CustomDatetimeWidget extends StatefulWidget {
   final Function onSelect;
   final DateTime startDate;
   final DateTime endDate;
+  final DateTime chosenDate;
 
-  const CustomDatetimeWidget({Key key, this.onSelect, this.startDate, this.endDate}) : super(key: key);
+  const CustomDatetimeWidget({Key key, this.onSelect, this.startDate, this.endDate, this.chosenDate}) : super(key: key);
 
   @override
   _CustomDatetimeWidgetState createState() => _CustomDatetimeWidgetState();
@@ -22,8 +23,13 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
   @override
   void initState() {
     super.initState();
-    selectedDate = DateTime(widget.startDate.year, widget.startDate.month, widget.startDate.day);
-    selectedTime = TimeOfDay.fromDateTime(widget.startDate);
+    if (widget.chosenDate == null) {
+      selectedDate = DateTime(widget.startDate.year, widget.startDate.month, widget.startDate.day);
+      selectedTime = TimeOfDay.fromDateTime(widget.startDate);
+    } else {
+      selectedDate = DateTime(widget.chosenDate.year, widget.chosenDate.month, widget.chosenDate.day);
+      selectedTime = TimeOfDay.fromDateTime(widget.chosenDate);
+    }
   }
 
   @override
@@ -93,7 +99,8 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
       fit: FlexFit.tight,
       child: CustomDatePicker(
         endDate: DateTime(widget.endDate.year, widget.endDate.month, widget.endDate.day),
-        startDate: selectedDate,
+        startDate: DateTime(widget.startDate.year, widget.startDate.month, widget.startDate.day),
+        chosenDate: widget.chosenDate,
         onSelect: (DateTime newDate) {
           selectedDate = newDate;
         },
@@ -106,8 +113,7 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
       flex: 1,
       fit: FlexFit.tight,
       child: CustomTimePicker(
-        endDate: widget.endDate,
-        startDate: widget.startDate,
+        selectedTime: selectedTime,
         onSelect: (TimeOfDay newTime) {
           selectedTime = newTime;
         },

@@ -2,11 +2,10 @@ import 'package:datetime_widget/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class CustomTimePicker extends StatefulWidget {
-  final DateTime startDate;
-  final DateTime endDate;
+  final TimeOfDay selectedTime;
   final Function onSelect;
 
-  const CustomTimePicker({Key key, this.startDate, this.endDate, this.onSelect}) : super(key: key);
+  const CustomTimePicker({Key key, this.selectedTime, this.onSelect}) : super(key: key);
 
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
@@ -28,12 +27,12 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   @override
   void initState() {
     super.initState();
-    selectedMinute = widget.startDate.minute;
-    if (widget.startDate.hour < 12) {
-      selectedHour = widget.startDate.hour;
+    selectedMinute = widget.selectedTime.minute;
+    if (widget.selectedTime.hour < 12) {
+      selectedHour = widget.selectedTime.hour;
       hourList = constants.firstHalfOfDay;
     } else {
-      selectedHour = (widget.startDate.hour ~/ 12);
+      selectedHour = (widget.selectedTime.hour ~/ 12);
       hourList = constants.secondHalfOfDay;
       isAm = false;
     }

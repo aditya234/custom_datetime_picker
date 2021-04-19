@@ -5,9 +5,10 @@ import 'package:datetime_widget/utils/helpers.dart';
 class CustomDatePicker extends StatefulWidget {
   final DateTime startDate;
   final DateTime endDate;
+  final DateTime chosenDate;
   final Function onSelect;
 
-  const CustomDatePicker({Key key, this.startDate, this.endDate, this.onSelect}) : super(key: key);
+  const CustomDatePicker({Key key, this.startDate, this.endDate, this.onSelect, this.chosenDate}) : super(key: key);
 
   @override
   _CustomDatePickerState createState() => _CustomDatePickerState();
@@ -35,7 +36,19 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     super.initState();
     calender = widget.startDate.generateCalender(widget.endDate);
     years = calender.keys.toList();
-    getCalenderDateTimes();
+    if (widget.chosenDate == null) {
+      getCalenderDateTimes();
+    } else {
+      //setting chosen date if there's any
+      selectedYearIndex = years.indexOf(widget.chosenDate.year) ?? 0;
+      months = calender[years[selectedYearIndex]].keys.toList();
+      selectedMonthIndex = (months.length > (widget.chosenDate.month - 1))
+          ? months.indexOf(constants.monthMapping[widget.chosenDate.month])
+          : 0;
+
+      days = calender[years[selectedYearIndex]][months[selectedMonthIndex]];
+      selectedDayIndex = (days.length > (widget.chosenDate.day - 1)) ? days.indexOf(widget.chosenDate.day) : 0;
+    }
   }
 
   @override
@@ -64,22 +77,24 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                       });
                     },
                     child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                      padding: EdgeInsets.all(6),
+                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: RichText(
-                        text: TextSpan(
-                          text: "Year: ",
-                          style: DefaultTextStyle.of(context).style,
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: years[selectedYearIndex].toString(),
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Year:",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            years[selectedYearIndex].toString(),
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -93,22 +108,24 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                       });
                     },
                     child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                      padding: EdgeInsets.all(6),
+                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: RichText(
-                        text: TextSpan(
-                          text: "Month: ",
-                          style: DefaultTextStyle.of(context).style,
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: months[selectedMonthIndex].toString(),
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Month:",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            months[selectedMonthIndex].toString(),
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
                   ),

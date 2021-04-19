@@ -48,10 +48,11 @@ class _HomeState extends State<Home> {
                   return CustomDatetimeWidget(
                     startDate: DateTime.parse(start),
                     endDate: DateTime.parse(end),
+                    chosenDate: _chosenDateTime,
                     onSelect: (DateTime selectedDate) {
                       setState(() {
                         _chosenDateTime = selectedDate;
-                        start = selectedDate.toString();
+                        // start = selectedDate.toString();
                       });
                     },
                   );
