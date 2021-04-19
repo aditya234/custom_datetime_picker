@@ -100,7 +100,7 @@ class _CustomDatetimeWidgetState extends State<CustomDatetimeWidget> {
       child: CustomDatePicker(
         endDate: DateTime(widget.endDate.year, widget.endDate.month, widget.endDate.day),
         startDate: DateTime(widget.startDate.year, widget.startDate.month, widget.startDate.day),
-        chosenDate: widget.chosenDate,
+        chosenDate: selectedDate,
         onSelect: (DateTime newDate) {
           selectedDate = newDate;
         },

@@ -45,9 +45,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       selectedMonthIndex = (months.length > (widget.chosenDate.month - 1))
           ? months.indexOf(constants.monthMapping[widget.chosenDate.month])
           : 0;
-
       days = calender[years[selectedYearIndex]][months[selectedMonthIndex]];
-      selectedDayIndex = (days.length > (widget.chosenDate.day - 1)) ? days.indexOf(widget.chosenDate.day) : 0;
+      selectedDayIndex = days.contains(widget.chosenDate.day) ? days.indexOf(widget.chosenDate.day) : 0;
     }
   }
 
@@ -174,8 +173,8 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
               color: selectedItemIndex == index
                   ? Colors.blueAccent
                   : (selectorIndex == 0 &&
-                          today.day == index + 1 &&
-                          (selectedMonthIndex + 1 == today.month) &&
+                          today.day == days[index] &&
+                          (selectedMonthIndex+1 == today.month) &&
                           (years[selectedYearIndex] == today.year))
                       ? Colors.grey[300]
                       : Colors.white,
@@ -219,7 +218,13 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         getCalenderDateTimes();
         break;
     }
-    widget.onSelect(DateTime(years[selectedYearIndex], selectedMonthIndex + 1, days[selectedDayIndex]));
+    int selectedMonth = 0;
+    constants.monthMapping.forEach((key, value) {
+      if (months[selectedMonthIndex] == value) {
+        selectedMonth = key;
+      }
+    });
+    widget.onSelect(DateTime(years[selectedYearIndex], selectedMonth, days[selectedDayIndex]));
     setState(() {});
   }
 

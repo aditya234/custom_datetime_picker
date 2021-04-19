@@ -28,7 +28,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   DateTime _chosenDateTime;
   String start = '2016-01-10 14:40:00.000';
-  String end = '2021-04-30 00:00:00.000';
+  String end = '2021-04-22 00:00:00.000';
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _HomeState extends State<Home> {
                 barrierDismissible: true,
                 builder: (BuildContext context) {
                   return CustomDatetimeWidget(
-                    startDate: DateTime.parse(start),
+                    startDate: DateTime.now(),//DateTime.parse(start),
                     endDate: DateTime.parse(end),
                     chosenDate: _chosenDateTime,
                     onSelect: (DateTime selectedDate) {
