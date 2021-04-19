@@ -32,7 +32,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       selectedHour = widget.selectedTime.hour;
       hourList = constants.firstHalfOfDay;
     } else {
-      selectedHour = (widget.selectedTime.hour ~/ 12);
+      selectedHour = (widget.selectedTime.hour % 12);
       hourList = constants.secondHalfOfDay;
       isAm = false;
     }
