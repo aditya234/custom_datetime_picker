@@ -174,7 +174,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                   ? Colors.blueAccent
                   : (selectorIndex == 0 &&
                           today.day == days[index] &&
-                          (selectedMonthIndex+1 == today.month) &&
+                          (getMonthIndex() == today.month) &&
                           (years[selectedYearIndex] == today.year))
                       ? Colors.grey[300]
                       : Colors.white,
@@ -218,18 +218,23 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         getCalenderDateTimes();
         break;
     }
-    int selectedMonth = 0;
-    constants.monthMapping.forEach((key, value) {
-      if (months[selectedMonthIndex] == value) {
-        selectedMonth = key;
-      }
-    });
-    widget.onSelect(DateTime(years[selectedYearIndex], selectedMonth, days[selectedDayIndex]));
+
+    widget.onSelect(DateTime(years[selectedYearIndex], getMonthIndex(), days[selectedDayIndex]));
     setState(() {});
   }
 
   getCalenderDateTimes() {
     months = calender[years[selectedYearIndex]].keys.toList();
     days = calender[years[selectedYearIndex]][months[selectedMonthIndex]];
+  }
+
+  getMonthIndex() {
+    int selectedMonth = 0;
+    constants.monthMapping.forEach((key, value) {
+      if (months[selectedMonthIndex] == value) {
+        selectedMonth = key;
+      }
+    });
+    return selectedMonth;
   }
 }
